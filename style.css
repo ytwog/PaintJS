@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: darkslateblue;
+}
+
+div.block-title {
+  margin: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  background-color: white;
+  border-radius: 20px;
+  border-color: darkblue;
+  border: solid 3px;
+}
+
+div.block-content {
+  margin: 40px;
+  margin-top: 0px;
+  min-height: 320px;
+  text-align: center;
+  background-color: rgb(241, 241, 241);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border: solid 3px;
+  border-top: 0px;
+  border-color: darkblue;
+}
+
+#paint-panel{
+  text-align: center;
+  background-color: rgb(232, 233, 240);
+  border: solid 3px;
+  border-color: rgb(164, 171, 185);
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#paint-panel div._block{
+  width: 100%;
+  padding-bottom: 10px;
+  border: solid 1px;
+}
+
+#paint-panel p{
+  margin: 0px;
+  margin-top: 3px;
+}
+
+#paint-canvas {
+  margin: 10px;
+  color: red;
+}
+
+input[type='range']{
+  width: 60%;
+}
+
+._flexable {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.pixel {
+  position: relative;
+  margin: 0px;
+  width: 100%;
+  border: solid 1px black;
+}
+
+.pixel::before {
+	content: "";
+	float: left;
+	padding-top: 100%; 	/* initial ratio of 1:1*/
+}
