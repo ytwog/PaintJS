@@ -15,6 +15,15 @@ let images = {
   bucket: 'https://www.seekpng.com/png/detail/34-343844_fill-color-icon-photoshop-paint-bucket-icon.png'
 }
 
+function mouseOverPixel(event) {
+  if(canvasData.pressed) {
+      $(event.target).css('backgroundColor', canvasData.color);
+  }
+}
+
+$(document).on('mousedown', (event) => {canvasData.pressed = true;event.preventDefault();});
+$(document).on('mouseup', (event) => {canvasData.pressed = false;event.preventDefault();});
+
 function loadPage() {
   let panelSize = 4;
   let blockPanel = $('#paint-panel').eq(0);
@@ -24,7 +33,6 @@ function loadPage() {
   blockDivs[panelSize-2].css('width', '30em');
   blockDivs[panelSize-1].css('width', '100%');
   blockPanel.append(...blockDivs); // Adding those divs into page
-
 
   // Create ranges
   inputRangeX = $('<input>', {type: 'range', min: 1, max: 32, value: canvasData.width});
@@ -60,7 +68,7 @@ function loadPage() {
           });
           textElements.canvasYValue.html(`${inputRangeY.val()}`);
           break;
-        case 1:
+        case 1: // Tool block
           textElements.toolLabel = $('<p>', {html: 'tool'});
           toolsDivUpper = $('<div class="_flexable">');
           toolPencyl = $('<button>').append($(`<img src=${images.pencyl} alt="pencyl" width="18px" height="18px" style="float:right">`));
@@ -69,8 +77,9 @@ function loadPage() {
           toolsDivUpper.append(toolBucket);
           element.append(textElements.toolLabel);
           element.append(toolsDivUpper);
+          element.append($('<p>', {html: 'Not implemented yet...'}));
           break;
-        case 2:
+        case 2: // Color block
           textElements.colorLabel = $('<p>', {html: 'color'});
           mainColor = $('<button class="color">').css('backgroundColor', `#${canvasData.color}`).css('margin-bottom', '1em');
           colorDivUpper = $('<div class="_flexable">');
@@ -89,7 +98,7 @@ function loadPage() {
               colorDivLower.append(colorButton);
             else
               colorDivUpper.append(colorButton);
-            colorButton.eq(0).on('click', (event) => {
+            colorButton.eq(0).click(event => {
               canvasData.color = $(event.target).css('backgroundColor');
               mainColor.css('backgroundColor', `${canvasData.color}`);
             })
@@ -121,9 +130,10 @@ function printCanvas(width, height) {
       );
       elementCanvas.append(rowElement);
       canvasRow.forEach((canvasPixel, index) => {
-        pixelElement = $('<div class="pixel">').css('color', canvasPixel).on('click', (event) => {
-          $(event.target).css('backgroundColor', canvasData.color);
-        });
+        
+
+        pixelElement = $('<div class="pixel">').css('color', canvasPixel)
+        pixelElement.on('mouseover', mouseOverPixel);
         rowElement.append(pixelElement);
       })
     });
