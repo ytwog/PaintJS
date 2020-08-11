@@ -1,8 +1,15 @@
+const _TOOLS = {
+  pencyl: 0,
+  bucket: 1
+}
+
 let inputRangeX, inputRangeY; // Range elements
 let textElements = {};
 let canvasData = {
+  bucketingColor: 'F000',
   width: 20,
   height: 12,
+  tool: _TOOLS.pencyl,
   color: '#000',
   pixels: [],
   colors: ['000', '222', '444', '666', '999', 'BBB', 'FFF', 'F0F', 'F5F', 'FAF',
@@ -15,13 +22,32 @@ let images = {
   bucket: 'https://www.seekpng.com/png/detail/34-343844_fill-color-icon-photoshop-paint-bucket-icon.png'
 }
 
-function mouseOverPixel(event) {
-  if(canvasData.pressed) {
-      $(event.target).css('backgroundColor', canvasData.color);
+function bucketPaint(element) {
+  if(canvasData.bucketingColor == element.css('backgroundColor') &&
+    canvasData.bucketingColor != canvasData.color) {
+    let indexElement = element.index();
+    element.css('backgroundColor', canvasData.color);
+    bucketPaint(element.parent().prev().children().eq(indexElement));
+    bucketPaint(element.parent().next().children().eq(indexElement));
+    bucketPaint(element.prev());
+    bucketPaint(element.next());
   }
 }
 
-$(document).on('mousedown', (event) => {canvasData.pressed = true;event.preventDefault();});
+function mouseOverPixel(event) {
+  let element = $(event.target);
+  if(canvasData.pressed) {
+    switch(canvasData.tool) {
+      case _TOOLS.pencyl:
+        element.css('backgroundColor', canvasData.color);
+        break;
+      case _TOOLS.bucket:
+        canvasData.bucketingColor =  element.css('backgroundColor');
+        bucketPaint(element);
+        break;
+    }
+  }
+}
 $(document).on('mouseup', (event) => {canvasData.pressed = false;event.preventDefault();});
 
 function loadPage() {
@@ -71,13 +97,16 @@ function loadPage() {
         case 1: // Tool block
           textElements.toolLabel = $('<p>', {html: 'tool'});
           toolsDivUpper = $('<div class="_flexable">');
-          toolPencyl = $('<button>').append($(`<img src=${images.pencyl} alt="pencyl" width="18px" height="18px" style="float:right">`));
-          toolBucket = $('<button>').append($(`<img src=${images.bucket} alt="bucket" width="18px" height="18px" style="float:right">`));
+          toolPencyl = $('<button>').append($(`<img src=${images.pencyl} alt="pencyl" width="18px" height="18px" style="float:right">`)).click(event=> {
+            canvasData.tool = _TOOLS.pencyl;
+          });
+          toolBucket = $('<button>').append($(`<img src=${images.bucket} alt="bucket" width="18px" height="18px" style="float:right">`)).click(event=> {
+            canvasData.tool = _TOOLS.bucket;
+          });
           toolsDivUpper.append(toolPencyl);
           toolsDivUpper.append(toolBucket);
           element.append(textElements.toolLabel);
           element.append(toolsDivUpper);
-          element.append($('<p>', {html: 'Not implemented yet...'}));
           break;
         case 2: // Color block
           textElements.colorLabel = $('<p>', {html: 'color'});
@@ -130,10 +159,9 @@ function printCanvas(width, height) {
       );
       elementCanvas.append(rowElement);
       canvasRow.forEach((canvasPixel, index) => {
-        
-
         pixelElement = $('<div class="pixel">').css('color', canvasPixel)
         pixelElement.on('mouseover', mouseOverPixel);
+        pixelElement.on('mousedown', (event) => {canvasData.pressed = true;event.preventDefault();mouseOverPixel(event);});
         rowElement.append(pixelElement);
       })
     });
