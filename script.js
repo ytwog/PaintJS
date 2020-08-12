@@ -144,28 +144,31 @@ function loadPage() {
 }
 
 function printCanvas(width, height) {
-  canvasData.width = width;
-  canvasData.height = height;
-  if(canvasData.pixels == undefined || canvasData.pixels.length == 0) {
-    let singleRow = new Array(width);
-    singleRow.fill('#FFF');
-    canvasData.pixels = new Array(height);
-    canvasData.pixels.fill(singleRow);
-    let elementCanvas = $('#paint-canvas');
-
-    canvasData.pixels.forEach((canvasRow, index) => {
-      rowElement = $('<div>').css('justify-content', 'center').css(
-        'display', 'flex'
-      );
-      elementCanvas.append(rowElement);
-      canvasRow.forEach((canvasPixel, index) => {
-        pixelElement = $('<div class="pixel">').css('color', canvasPixel)
-        pixelElement.on('mouseover', mouseOverPixel);
-        pixelElement.on('mousedown', (event) => {canvasData.pressed = true;event.preventDefault();mouseOverPixel(event);});
-        rowElement.append(pixelElement);
-      })
-    });
+  
+  if(parseInt(height) == NaN) return;
+  if(parseInt(width) == NaN) return;
+  canvasData.width = parseInt(width);
+  canvasData.height = parseInt(height);
+  let singleRow = new Array(canvasData.width);
+  singleRow.fill('#FFF');
+  canvasData.pixels = new Array(canvasData.height);
+  canvasData.pixels.fill(singleRow);
+  let elementCanvas = $('#paint-canvas');
+  if(canvasData.pixels != undefined && canvasData.pixels.length > 0) {
+    elementCanvas.empty();
   }
+  canvasData.pixels.forEach((canvasRow, index) => {
+    rowElement = $('<div>').css('justify-content', 'center').css(
+      'display', 'flex'
+    );
+    elementCanvas.append(rowElement);
+    canvasRow.forEach((canvasPixel, index) => {
+      pixelElement = $('<div class="pixel">').css('color', canvasPixel)
+      pixelElement.on('mouseover', mouseOverPixel);
+      pixelElement.on('mousedown', (event) => {canvasData.pressed = true;event.preventDefault();mouseOverPixel(event);});
+      rowElement.append(pixelElement);
+    })
+  });
 
 }
 
